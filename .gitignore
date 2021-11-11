@@ -1,0 +1,32 @@
+lib/*
+.DS_Store
+.idea
+*.iml
+.yarn
+.yarnrc
+#distTs
+
+# Dependency directory
+# Commenting this out is preferred by some people, see
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
+node_modules
+package-lock.json
+
+# Browserify cache & build files
+bundle.js
+.bundle.js
+
+# build
+/lib/
+.linaria-cache
+
+# NPM debug
+npm-debug.log
+npm-debug.log*
+
+# yarn errors
+yarn-error.log
+
+# next.js
+packages/docs/.next/
+packages/docs/out/
