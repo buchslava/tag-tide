@@ -1,15 +1,15 @@
-import { parse, stringify, El } from "html-parse-stringify";
+import { parse, stringify, El, Attributes } from "html-parse-stringify";
 
-function stripNested(astPiece: El[], expectedTag: string[]) {
+function stripNested(astPiece: El[], omitTags: string[]) {
   if (!astPiece) {
     return;
   }
   for (const tag of astPiece) {
-    if (tag.type === "tag" && !!tag.name && expectedTag.includes(tag.name)) {
+    if (tag.type === "tag" && !!tag.name && !omitTags.includes(tag.name)) {
       tag.name = "remove";
     }
     if (tag.children) {
-      stripNested(tag.children, expectedTag);
+      stripNested(tag.children, omitTags);
     }
   }
 }
@@ -17,12 +17,12 @@ function stripNested(astPiece: El[], expectedTag: string[]) {
 export interface TraceInfo {
   original: string;
   ast: El[];
-  nestedTagsToRemove: string[];
+  omitTags: string[];
 }
 
 export class Prosaic {
   private ast: El[];
-  private nestedTagsToRemove = ["div", "span"];
+  private omitTags: string[] = [];
 
   constructor(private original: string) {
     this.ast = parse(this.original);
@@ -32,23 +32,61 @@ export class Prosaic {
     cb({
       original: this.original,
       ast: [...this.ast],
-      nestedTagsToRemove: [...this.nestedTagsToRemove],
+      omitTags: [...this.omitTags],
     });
     return this;
   }
 
-  public setNestedTagsToRemove(nestedTagsToRemove: string[]): Prosaic {
-    this.nestedTagsToRemove = nestedTagsToRemove;
+  public flatten(omitTags?: string[]): Prosaic {
+    if (omitTags) {
+      this.omitTags = omitTags;
+    }
+    for (const tag of this.ast) {
+      if (tag.children) {
+        stripNested(tag.children, this.omitTags);
+      }
+    }
     return this;
   }
 
-  public result(): string {
-    for (const tag of this.ast) {
+  public removeAttributes(ignore?: string[]): Prosaic {
+    const removeAttr = (tag: El) => {
+      if (!tag) {
+        return;
+      }
+      if (!ignore) {
+        delete tag.attrs;
+      } else {
+        if (ignore) {
+          tag.attrs = Object.keys(tag.attrs || [])
+            .filter((key) => ignore.includes(key))
+            .reduce((obj: Attributes, key: string) => {
+              if (tag && tag.attrs && tag.attrs[key]) {
+                obj[key] = tag.attrs[key];
+              }
+              return obj;
+            }, {});
+        }
+      }
       if (tag.children) {
-        stripNested(tag.children, this.nestedTagsToRemove);
+        for (const child of tag.children) {
+          removeAttr(child);
+        }
+      }
+    };
+    for (const tag of this.ast) {
+      removeAttr(tag);
+    }
+    return this;
+  }
+
+  public result(tagsToStrip?: string[]): string {
+    let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)(\s*\/)?>/g, "");
+    if (tagsToStrip) {
+      for (const tag of tagsToStrip) {
+        res = res.replace(new RegExp(`<(\/?|\!?)(${tag})>`, "g"), "");
       }
     }
-
-    return stringify(this.ast).replace(/<(\/?|\!?)(remove)>/g, "");
+    return res;
   }
 }
