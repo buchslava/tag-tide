@@ -21,12 +21,10 @@ function stripNested(astPiece: El[], omit: string[]) {
 export interface TraceInfo {
   original: string;
   ast: El[];
-  omitTags: string[];
 }
 
 export class Prosaic {
   private ast: El[];
-  private omitTags: string[] = [];
 
   constructor(private original: string) {
     this.ast = parse(this.original);
@@ -36,7 +34,6 @@ export class Prosaic {
     cb({
       original: this.original,
       ast: [...this.ast],
-      omitTags: [...this.omitTags],
     });
     return this;
   }
@@ -45,6 +42,30 @@ export class Prosaic {
     for (const tag of this.ast) {
       if (tag.children) {
         stripNested(tag.children, omit || []);
+      }
+    }
+    return this;
+  }
+
+  public rootParagraphs(): Prosaic {
+    for (let i = 0; i < this.ast.length; i++) {
+      const tag = this.ast[i];
+      if (tag.type === "tag" && tag?.name === "div") {
+        tag.type = "tag";
+        tag.name = "p";
+      } else if (tag.type === "text") {
+        this.ast[i] = {
+          type: "tag",
+          name: "p",
+          voidElement: false,
+          attrs: {},
+          children: [
+            {
+              type: "text",
+              content: this.ast[i].content,
+            },
+          ],
+        };
       }
     }
     return this;
@@ -60,7 +81,10 @@ export class Prosaic {
       } else {
         if (omit) {
           tag.attrs = Object.keys(tag.attrs || [])
-            .filter((key) => (omit[tag.name || ''] && omit[tag.name || ""].includes(key)) || (omit["*"] && omit["*"].includes(key)))
+            .filter(
+              (key) =>
+                (omit[tag.name || ""] && omit[tag.name || ""].includes(key)) || (omit["*"] && omit["*"].includes(key))
+            )
             .reduce((obj: Attributes, key: string) => {
               if (tag && tag.attrs && tag.attrs[key]) {
                 obj[key] = tag.attrs[key];
