@@ -44,7 +44,7 @@ describe("basic flow", () => {
     const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
     const prettified = new Prosaic(original)
       .flatten(['img'])
-      .removeAttributes(['src'])
+      .removeAttributes({img: ['src']})
       .result();
 
     expect(prettified).to.equal(expected);
@@ -56,6 +56,28 @@ describe("basic flow", () => {
     const prettified = new Prosaic(original)
       .flatten(['img'])
       .removeAttributes()
+      .result();
+
+    expect(prettified).to.equal(expected);
+  });
+
+  it("flatten and leave img WITH src but without other attributes", () => {
+    const original = "<div id='d0'><div id='d1'> 111 <img src='http://www.foo.com' alt='my image'/> 222</div></div>";
+    const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
+    const prettified = new Prosaic(original)
+      .flatten(['img'])
+      .removeAttributes({img: ['src']})
+      .result();
+
+    expect(prettified).to.equal(expected);
+  });
+
+  it("flatten and leave img WITH src and id but without other attributes", () => {
+    const original = "<div id='d0'><div id='d1'> 111 <img src='http://www.foo.com' alt='my image'/> 222</div></div>";
+    const expected = `<div id="d0"><remove id="d1"> 111 <img src="http://www.foo.com"/> 222</div>`;
+    const prettified = new Prosaic(original)
+      .flatten(['img'])
+      .removeAttributes({img: ['src'], '*': ['id']})
       .result();
 
     expect(prettified).to.equal(expected);

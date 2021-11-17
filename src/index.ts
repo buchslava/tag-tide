@@ -1,15 +1,19 @@
 import { parse, stringify, El, Attributes } from "html-parse-stringify";
 
-function stripNested(astPiece: El[], omitTags: string[]) {
+export interface AttributesByTag {
+  [key: string]: string[];
+}
+
+function stripNested(astPiece: El[], omit: string[]) {
   if (!astPiece) {
     return;
   }
   for (const tag of astPiece) {
-    if (tag.type === "tag" && !!tag.name && !omitTags.includes(tag.name)) {
+    if (tag.type === "tag" && !!tag.name && !omit.includes(tag.name)) {
       tag.name = "remove";
     }
     if (tag.children) {
-      stripNested(tag.children, omitTags);
+      stripNested(tag.children, omit);
     }
   }
 }
@@ -37,29 +41,26 @@ export class Prosaic {
     return this;
   }
 
-  public flatten(omitTags?: string[]): Prosaic {
-    if (omitTags) {
-      this.omitTags = omitTags;
-    }
+  public flatten(omit?: string[]): Prosaic {
     for (const tag of this.ast) {
       if (tag.children) {
-        stripNested(tag.children, this.omitTags);
+        stripNested(tag.children, omit || []);
       }
     }
     return this;
   }
 
-  public removeAttributes(ignore?: string[]): Prosaic {
+  public removeAttributes(omit?: AttributesByTag): Prosaic {
     const removeAttr = (tag: El) => {
       if (!tag) {
         return;
       }
-      if (!ignore) {
+      if (!omit) {
         delete tag.attrs;
       } else {
-        if (ignore) {
+        if (omit) {
           tag.attrs = Object.keys(tag.attrs || [])
-            .filter((key) => ignore.includes(key))
+            .filter((key) => (omit[tag.name || ''] && omit[tag.name || ""].includes(key)) || (omit["*"] && omit["*"].includes(key)))
             .reduce((obj: Attributes, key: string) => {
               if (tag && tag.attrs && tag.attrs[key]) {
                 obj[key] = tag.attrs[key];
