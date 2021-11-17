@@ -1,3 +1,4 @@
+import { throwStatement } from "@babel/types";
 import { parse, stringify, El, Attributes } from "html-parse-stringify";
 
 export interface AttributesByTag {
@@ -83,7 +84,8 @@ export class Prosaic {
           tag.attrs = Object.keys(tag.attrs || [])
             .filter(
               (key) =>
-                (omit[tag.name || ""] && omit[tag.name || ""].includes(key)) || (omit["*"] && omit["*"].includes(key))
+                (omit[tag.name || ""] && omit[tag.name || ""].includes(key)) ||
+                (omit["*"] && omit["*"].includes(key))
             )
             .reduce((obj: Attributes, key: string) => {
               if (tag && tag.attrs && tag.attrs[key]) {
@@ -105,6 +107,12 @@ export class Prosaic {
     return this;
   }
 
+  public rootPoint(attr: string, re: RegExp): Prosaic {
+    const foo = this.getElementByAttrRegex(attr, re);
+    console.log(foo);
+    return this;
+  }
+
   public result(tagsToStrip?: string[]): string {
     let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)(\s*\/)?>/g, "");
     if (tagsToStrip) {
@@ -113,5 +121,32 @@ export class Prosaic {
       }
     }
     return res;
+  }
+
+  private getElementByAttrRegex(attr: string, re: RegExp): El | null {
+    const res = [];
+    const deepSearch = (el: El) => {
+      for (const attr of Object.keys(el.attrs || {})) {
+        if (attr.match(re)) {
+          res.push(el);
+        }
+      }
+      for (const child of el.children || []) {
+        deepSearch(child);
+      }
+    };
+
+    for (const tag of this.ast) {
+      for (const attr of Object.keys(tag.attrs || {})) {
+        if ((tag.attrs?[attr] || '').match(re)) {
+          res.push(tag);
+        }
+      }
+      for (const child of tag.children || []) {
+        deepSearch(child);
+      }
+    }
+
+    return res.length > 0 ? res[0] : null;
   }
 }
