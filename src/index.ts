@@ -1,20 +1,43 @@
-import { throwStatement } from "@babel/types";
 import { parse, stringify, El, Attributes } from "html-parse-stringify";
 
 export interface AttributesByTag {
   [key: string]: string[];
 }
 
-function stripNested(astPiece: El[], omit: string[]) {
+function stripNested(astPiece: El[] | undefined, omit: string[]) {
   if (!astPiece) {
     return;
   }
   for (const tag of astPiece) {
+    if (tag.voidElement && tag.name !== "div") {
+      continue;
+    }
     if (tag.type === "tag" && !!tag.name && !omit.includes(tag.name)) {
       tag.name = "remove";
     }
     if (tag.children) {
-      stripNested(tag.children, omit);
+      stripNested(tag.children || [], omit);
+    }
+  }
+}
+
+function tableAsText(astPiece: El[] | undefined) {
+  if (!astPiece) {
+    return;
+  }
+  for (const tag of astPiece) {
+    if (tag.type === "tag" && tag.name === "td") {
+      tag.name = "div";
+      for (let child of tag.children || []) {
+        if (child.type === "text") {
+          child.content += " ";
+        }
+      }
+    } else if (["table", "thead", "tbody", "tfoot", "th", "tr", "td", "col", "colgroup"].includes(tag.name as string)) {
+      tag.name = "div";
+    }
+    if (tag.children) {
+      tableAsText(tag.children || []);
     }
   }
 }
@@ -41,10 +64,13 @@ export class Prosaic {
 
   public flatten(omit?: string[]): Prosaic {
     for (const tag of this.ast) {
-      if (tag.children) {
-        stripNested(tag.children, omit || []);
-      }
+      stripNested(tag.children, omit || []);
     }
+    return this;
+  }
+
+  public textTable(): Prosaic {
+    tableAsText(this.ast);
     return this;
   }
 
@@ -84,8 +110,7 @@ export class Prosaic {
           tag.attrs = Object.keys(tag.attrs || [])
             .filter(
               (key) =>
-                (omit[tag.name || ""] && omit[tag.name || ""].includes(key)) ||
-                (omit["*"] && omit["*"].includes(key))
+                (omit[tag.name || ""] && omit[tag.name || ""].includes(key)) || (omit["*"] && omit["*"].includes(key))
             )
             .reduce((obj: Attributes, key: string) => {
               if (tag && tag.attrs && tag.attrs[key]) {
@@ -107,9 +132,23 @@ export class Prosaic {
     return this;
   }
 
-  public rootPoint(attr: string, re: RegExp): Prosaic {
-    const foo = this.getElementByAttrRegex(attr, re);
-    console.log(foo);
+  public startFrom(attr: string, re: RegExp): Prosaic {
+    const newRoot = this.getElementByAttrRegex(attr, re);
+    if (newRoot) {
+      this.ast = [newRoot];
+    } else {
+      throw Error(`Can't find related tag for ${attr} ${re.source}`);
+    }
+    return this;
+  }
+
+  public startAfter(attr: string, re: RegExp): Prosaic {
+    const newRoot = this.getElementByAttrRegex(attr, re);
+    if (newRoot && newRoot.children) {
+      this.ast = newRoot.children;
+    } else {
+      throw Error(`Can't find related tag for ${attr} ${re.source}`);
+    }
     return this;
   }
 
@@ -120,33 +159,27 @@ export class Prosaic {
         res = res.replace(new RegExp(`<(\/?|\!?)(${tag})>`, "g"), "");
       }
     }
-    return res;
+    res = res.replace(new RegExp(`<p>\\s*<\\/p>`, "g"), "");
+    return res.replace(new RegExp(`\\s+`, "g"), " ");
   }
 
-  private getElementByAttrRegex(attr: string, re: RegExp): El | null {
-    const res = [];
-    const deepSearch = (el: El) => {
-      for (const attr of Object.keys(el.attrs || {})) {
-        if (attr.match(re)) {
-          res.push(el);
+  private getElementByAttrRegex(expectedAttr: string, re: RegExp): El | null {
+    const res: El[] = [];
+    const deepSearch = (ast: El[]) => {
+      for (const tag of ast) {
+        for (const attr of Object.keys(tag.attrs || {})) {
+          if (attr !== expectedAttr) {
+            continue;
+          }
+          const attrValue = tag.attrs ? tag.attrs[attr] : "";
+          if (attrValue.match(re)) {
+            res.push(tag);
+          }
         }
-      }
-      for (const child of el.children || []) {
-        deepSearch(child);
+        deepSearch(tag.children || []);
       }
     };
-
-    for (const tag of this.ast) {
-      for (const attr of Object.keys(tag.attrs || {})) {
-        if ((tag.attrs?[attr] || '').match(re)) {
-          res.push(tag);
-        }
-      }
-      for (const child of tag.children || []) {
-        deepSearch(child);
-      }
-    }
-
+    deepSearch(this.ast);
     return res.length > 0 ? res[0] : null;
   }
 }

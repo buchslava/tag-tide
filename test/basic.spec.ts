@@ -28,10 +28,10 @@ describe("basic flow", () => {
     expect(prettified).to.equal(expected);
   });
 
-  it("flatten single tag", () => {
+  it("leave single tag", () => {
     const original = "<div><div> 111 <img src='http://www.foo.com'/> 222</div></div>";
-    const expected = "<div> 111  222</div>";
-    const prettified = new Prosaic(original).flatten().removeAttributes().result();
+    const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
+    const prettified = new Prosaic(original).flatten().removeAttributes({img: ['src']}).result();
 
     expect(prettified).to.equal(expected);
   });
