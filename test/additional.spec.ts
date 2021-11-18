@@ -43,8 +43,6 @@ describe("additional", () => {
       .rootParagraphs()
       .result();
 
-      console.log(prettified);
-
     expect(prettified).to.equal(expected);
   });
 });
