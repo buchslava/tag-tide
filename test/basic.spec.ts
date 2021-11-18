@@ -1,6 +1,6 @@
 import * as chai from "chai";
 
-import { Prosaic, TraceInfo } from "../src/index";
+import { TagTide, TraceInfo } from "../src/index";
 
 const expect = chai.expect;
 
@@ -8,7 +8,15 @@ describe("basic flow", () => {
   it("simple flatten", () => {
     const original = "<div>1 <div>2 <div><span>3</span></div></div></div> middle <div>4 <div>5</div></div>";
     const expected = "<div>1 2 3</div> middle <div>4 5</div>";
-    const prettified = new Prosaic(original).flatten().result();
+    const prettified = new TagTide(original).flatten().result();
+
+    expect(prettified).to.equal(expected);
+  });
+
+  it("some tags are upper case", () => {
+    const original = "<DIV>1 <DIV>2 <DIV><SPAN>3</SPAN></DIV></DIV></DIV> middle <div>4 <div>5</div></div>";
+    const expected = "<div>1 2 3</div> middle <div>4 5</div>";
+    const prettified = new TagTide(original).lowerCaseTags().flatten().result();
 
     expect(prettified).to.equal(expected);
   });
@@ -17,7 +25,7 @@ describe("basic flow", () => {
     const original =
       "<div>1 <div id='first'>2 <div><span class='foo' style='color: red;'>3</span></div></div></div> middle <div>4 <div>5</div></div>";
     const expected = "<div>1 2 3</div> middle <div>4 5</div>";
-    const prettified = new Prosaic(original)
+    const prettified = new TagTide(original)
       .flatten()
       .removeAttributes()
       // .trace((info: TraceInfo) => {
@@ -31,7 +39,10 @@ describe("basic flow", () => {
   it("leave single tag", () => {
     const original = "<div><div> 111 <img src='http://www.foo.com'/> 222</div></div>";
     const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
-    const prettified = new Prosaic(original).flatten().removeAttributes({img: ['src']}).result();
+    const prettified = new TagTide(original)
+      .flatten()
+      .removeAttributes({ img: ["src"] })
+      .result();
 
     expect(prettified).to.equal(expected);
   });
@@ -39,7 +50,7 @@ describe("basic flow", () => {
   it("flatten and leave img WITH src", () => {
     const original = "<div><div> 111 <img src='http://www.foo.com'/> 222</div></div>";
     const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
-    const prettified = new Prosaic(original)
+    const prettified = new TagTide(original)
       .flatten(["img"])
       .removeAttributes({ img: ["src"] })
       .result();
@@ -50,7 +61,7 @@ describe("basic flow", () => {
   it("flatten and leave img WITHOUT src", () => {
     const original = "<div><div> 111 <img src='http://www.foo.com'/> 222</div></div>";
     const expected = `<div> 111 <img/> 222</div>`;
-    const prettified = new Prosaic(original).flatten(["img"]).removeAttributes().result();
+    const prettified = new TagTide(original).flatten(["img"]).removeAttributes().result();
 
     expect(prettified).to.equal(expected);
   });
@@ -58,7 +69,7 @@ describe("basic flow", () => {
   it("flatten and leave img WITH src but without other attributes", () => {
     const original = "<div id='d0'><div id='d1'> 111 <img src='http://www.foo.com' alt='my image'/> 222</div></div>";
     const expected = `<div> 111 <img src="http://www.foo.com"/> 222</div>`;
-    const prettified = new Prosaic(original)
+    const prettified = new TagTide(original)
       .flatten(["img"])
       .removeAttributes({ img: ["src"] })
       .result();
@@ -69,7 +80,7 @@ describe("basic flow", () => {
   it("flatten and leave img WITH src and id but without other attributes", () => {
     const original = "<div id='d0'><div id='d1'> 111 <img src='http://www.foo.com' alt='my image'/> 222</div></div>";
     const expected = `<div id="d0"><remove id="d1"> 111 <img src="http://www.foo.com"/> 222</div>`;
-    const prettified = new Prosaic(original)
+    const prettified = new TagTide(original)
       .flatten(["img"])
       .removeAttributes({ img: ["src"], "*": ["id"] })
       .result();

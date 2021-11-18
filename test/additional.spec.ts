@@ -1,6 +1,6 @@
 import * as chai from "chai";
 
-import { Prosaic } from "../src/index";
+import { TagTide } from "../src/index";
 
 const expect = chai.expect;
 
@@ -8,7 +8,7 @@ describe("additional", () => {
   it("change root elements to paragraphs", () => {
     const original = "<p>foo</p><div>1 <div>2 <div><span>3</span></div></div></div> middle <div>4 <div>5</div></div>";
     const expected = "<p>foo</p><p>1 2 3</p><p> middle </p><p>4 5</p>";
-    const prettified = new Prosaic(original).flatten().rootParagraphs().result();
+    const prettified = new TagTide(original).flatten().rootParagraphs().result();
 
     expect(prettified).to.equal(expected);
   });
@@ -35,7 +35,7 @@ describe("additional", () => {
       <ul style="margin-top:0;margin-bottom:0;padding-inline-start:48px;"><li dir="ltr" style="list-style-type:disc;font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;" aria-level="1"><p dir="ltr" style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;" role="presentation"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Aaa</span></p></li><li dir="ltr" style="list-style-type:disc;font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;" aria-level="1"><p dir="ltr" style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;" role="presentation"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Bbb</span></p></li><li dir="ltr" style="list-style-type:disc;font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;" aria-level="1"><p dir="ltr" style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;" role="presentation"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">Ccc</span></p></li></ul>
       <br /><p dir="ltr" style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;"><span style="font-size:11pt;font-family:Arial;color:#000000;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre;white-space:pre-wrap;">The end</span></p></b><br class="Apple-interchange-newline">`;
     const expected = `<p> Test test test </p><p> Test test test </p><p><a href="http://www.microsoft.com">Test</a> test test</p><br/><br/><br/><p> 12 34 </p><br/><br/><ul><li>Aaa</li><li>Bbb</li><li>Ccc</li></ul><br/><p>The end</p>`;
-    const prettified = new Prosaic(htmlFromGoogleDocs)
+    const prettified = new TagTide(htmlFromGoogleDocs)
       .startAfter("id", /^docs-internal-guid-.+/)
       .textTable()
       .flatten(["a", "img", "li"])
