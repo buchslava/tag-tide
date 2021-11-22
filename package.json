@@ -1,15 +1,15 @@
 {
-  "name": "make-prosaic",
+  "name": "tag-tide",
   "version": "0.1.0",
-  "description": "Make prosaic",
+  "description": "tag-tide",
   "author": "Vyacheslav Chub <vyacheslav.chub@gmail.com>",
   "bugs": {
-    "url": "https://github.com/buchslava/make-prosaic/issues"
+    "url": "https://github.com/buchslava/tag-tide/issues"
   },
-  "homepage": "https://github.com/buchslava/make-prosaic#readme",
+  "homepage": "https://github.com/buchslava/tag-tide#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/buchslava/make-prosaic.git"
+    "url": "https://github.com/buchslava/tag-tide.git"
   },
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
