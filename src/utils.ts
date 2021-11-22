@@ -53,7 +53,7 @@ export function tableAsText(astPiece: El[] | undefined) {
   }
 }
 
-export function traverse(f: TraversePoint, astPiece: El[] | undefined, level: number) {
+export function traverse(f: TraversePoint, astPiece: El[] | undefined, level: number = 0) {
   if (!astPiece) {
     return;
   }
