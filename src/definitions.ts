@@ -8,3 +8,5 @@ export interface TraceInfo {
   original: string;
   ast: El[];
 }
+
+export type TraversePoint = (branch: El, level: number) => void;

@@ -1,12 +1,17 @@
 import { parse, stringify, El, Attributes } from "html-parse-stringify";
-import { AttributesByTag, TraceInfo } from "./definitions";
-import { lowerCaseNested, stripNested, tableAsText } from "./utils";
+import { AttributesByTag, TraceInfo, TraversePoint } from "./definitions";
+import { lowerCaseNested, stripNested, tableAsText, traverse } from "./utils";
 
 export class TagTide {
   private ast: El[];
 
   constructor(private original: string) {
     this.ast = parse(this.original);
+  }
+
+  public traverse(f: TraversePoint): TagTide {
+    traverse(f, this.ast, 0);
+    return this;
   }
 
   public trace(cb: (info: TraceInfo) => void): TagTide {

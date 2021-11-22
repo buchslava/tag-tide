@@ -1,4 +1,5 @@
 import { El } from "html-parse-stringify";
+import { TraversePoint } from "./definitions";
 
 export function lowerCaseNested(astPiece: El[] | undefined) {
   if (!astPiece) {
@@ -48,6 +49,18 @@ export function tableAsText(astPiece: El[] | undefined) {
     }
     if (tag.children) {
       tableAsText(tag.children || []);
+    }
+  }
+}
+
+export function traverse(f: TraversePoint, astPiece: El[] | undefined, level: number) {
+  if (!astPiece) {
+    return;
+  }
+  for (const tag of astPiece) {
+    f(tag, level);
+    if (tag.children) {
+      traverse(f, tag.children || [], level + 1);
     }
   }
 }

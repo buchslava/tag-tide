@@ -1,6 +1,6 @@
 import * as chai from "chai";
 
-import { TagTide } from "../src/index";
+import { El, TagTide } from "../src/index";
 
 const expect = chai.expect;
 
@@ -44,5 +44,31 @@ describe("additional", () => {
       .result();
 
     expect(prettified).to.equal(expected);
+  });
+
+  it("change 2-nd level content via traverse", () => {
+    const original = "<div>level 1 <div>level 2 <div>level 3</div></div></div>";
+    const expected = "<div>level 1 <div>modified level 2 <div>level 3</div></div></div>";
+    const prettified = new TagTide(original)
+      .traverse((el: El, level: number) => {
+        if (level === 2 && el.content) {
+          el.content = `modified ${el.content}`;
+        }
+      })
+      .result();
+
+    expect(prettified).to.equal(expected);
+  });
+
+  it("aggregation via traverse", () => {
+    const original = "<div>1 <div>2 <div>3</div></div></div>";
+    let total = 0;
+    new TagTide(original).traverse((el: El, level: number) => {
+      if (el.content) {
+        total += +el.content.trim();
+      }
+    });
+
+    expect(total).to.equal(6);
   });
 });
