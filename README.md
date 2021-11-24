@@ -91,9 +91,75 @@ Prints the following:
 
 ### "Start after"
 
-### Tables processing
+This pattern allows ignore some parent structures.
+
+```typescript
+import { TagTide } from "tag-tide";
+
+const source = `<body><div class="container-1"><p>content</p></div></body>`;
+const result = new TagTide(source)
+  .startAfter("class", /^container-\d/)
+  .result();
+
+console.log(result);
+```
+
+Prints the following:
+```
+<p>content</p>
+```
+
+The following code illustrates another approach to set starter-tag. Also, related tag can be included:
+
+```typescript
+import { TagTide } from "tag-tide";
+
+const source = `<body><div class="container-1"><p>content</p></div></body>`;
+const result = new TagTide(source)
+  .startFrom("class", /^container-\d/)
+  .result();
+
+console.log(result);
+```
+
+Prints the following:
+```
+<div class="container-1"><p>content</p></div>
+```
 
 ### "Flatten"
+
+This pattern will be useful if we need to remove nested tags. 
+
+```typescript
+import { TagTide } from "tag-tide";
+
+const original =
+  "<div>1 <div id='first'>2 <div><span class='foo' style='color: red;'>3</span></div></div></div> middle <div>4 <div>5</div></div>";
+const prettified = new TagTide(original).flatten().result();
+
+console.log(prettified);
+```
+Prints the following:
+```
+<div>1 2 3</div> middle <div>4 5</div>
+```
+
+Also, you can omit some tags:
+
+```typescript
+import { TagTide } from "tag-tide";
+
+const original =
+  "<div>1 <div id='first'>2 <div><span class='foo' style='color: red;'><a href='1' tatger='_blank'>3</a></span></div></div></div> middle <div>4 <div>5</div></div>";
+const prettified = new TagTide(original).flatten(['a']).result();
+
+console.log(prettified);
+```
+Prints the following:
+```
+<div>1 2 <a href="1" tatger="_blank">3</a></div> middle <div>4 5</div>
+```
 
 ### Remove attributes
 

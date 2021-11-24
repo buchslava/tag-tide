@@ -118,7 +118,7 @@ export class TagTide {
   }
 
   public result(tagsToStrip?: string[]): string {
-    let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)(\s*\/)?>/g, "");
+    let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)[^>]*>/g, "");
     if (tagsToStrip) {
       for (const tag of tagsToStrip) {
         res = res.replace(new RegExp(`</?${tag}[^>]*>`, "g"), "");

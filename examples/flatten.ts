@@ -5,6 +5,3 @@ const original =
 const prettified = new TagTide(original).flatten().result();
 
 console.log(prettified);
-
-// prints
-// <div>1 <remove id="first">2 <remove class="foo" style="color: red;">3</div> middle <div>4 5</div>

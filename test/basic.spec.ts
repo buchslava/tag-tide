@@ -79,7 +79,7 @@ describe("basic flow", () => {
 
   it("flatten and leave img WITH src and id but without other attributes", () => {
     const original = "<div id='d0'><div id='d1'> 111 <img src='http://www.foo.com' alt='my image'/> 222</div></div>";
-    const expected = `<div id="d0"><remove id="d1"> 111 <img src="http://www.foo.com"/> 222</div>`;
+    const expected = `<div id="d0"> 111 <img src="http://www.foo.com"/> 222</div>`;
     const prettified = new TagTide(original)
       .flatten(["img"])
       .removeAttributes({ img: ["src"], "*": ["id"] })
