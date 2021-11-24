@@ -87,4 +87,12 @@ describe("basic flow", () => {
 
     expect(prettified).to.equal(expected);
   });
+
+  it("strip tags", () => {
+    const original = "<div>level 1 <div><a href='#'><span>level <i>2</i></span></a> <div>level 3<br></div></div></div>";
+    const expected = `<div>level 1 <div>level 2 <div>level 3</div></div></div>`;
+    const prettified = new TagTide(original).result(['a', 'span', 'i', 'br']);
+
+    expect(prettified).to.equal(expected);
+  });
 });
