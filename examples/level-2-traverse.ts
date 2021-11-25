@@ -10,6 +10,3 @@ const prettified = new TagTide(original)
   .result();
 
 console.log(prettified);
-
-// prints
-// <div>level 1 <div>modified level 2 <div>level 3</div></div></div>

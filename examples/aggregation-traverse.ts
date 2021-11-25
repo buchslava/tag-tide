@@ -9,5 +9,3 @@ new TagTide(original).traverse((el: El) => {
 });
 
 console.log(total);
-
-// prints 6
