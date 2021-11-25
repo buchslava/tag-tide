@@ -89,7 +89,7 @@ Prints the following:
 
 ## Changes via the patterns
 
-### "Start after"
+### "Start after" or "Start from"
 
 This pattern allows ignore some parent structures.
 
@@ -126,6 +126,11 @@ Prints the following:
 ```
 <div class="container-1"><p>content</p></div>
 ```
+
+Important notes:
+
+1. In the "Start With" case, the result will include the associated (search) tag.
+2. If no matching tag is found, these patterns don't affect the result.
 
 ### "Flatten"
 

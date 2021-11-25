@@ -101,8 +101,6 @@ export class TagTide {
     const newRoot = this.getElementByAttrRegex(attr, re);
     if (newRoot) {
       this.ast = [newRoot];
-    } else {
-      throw Error(`Can't find related tag for ${attr} ${re.source}`);
     }
     return this;
   }
@@ -111,8 +109,6 @@ export class TagTide {
     const newRoot = this.getElementByAttrRegex(attr, re);
     if (newRoot && newRoot.children) {
       this.ast = newRoot.children;
-    } else {
-      throw Error(`Can't find related tag for ${attr} ${re.source}`);
     }
     return this;
   }
