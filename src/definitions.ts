@@ -1,4 +1,15 @@
-import { El } from "html-parse-stringify";
+export interface Attributes {
+  [key: string]: string;
+}
+
+export interface El {
+  type: string;
+  name?: string;
+  voidElement?: boolean;
+  attrs?: Attributes;
+  children?: El[];
+  content?: string;
+}
 
 export interface AttributesByTag {
   [key: string]: string[];

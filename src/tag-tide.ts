@@ -1,5 +1,5 @@
-import { parse, stringify, El, Attributes } from "html-parse-stringify";
-import { AttributesByTag, TraceInfo, TraversePoint } from "./definitions";
+import { parse, stringify } from "html-parse-stringify";
+import { Attributes, AttributesByTag, El, TraceInfo, TraversePoint } from "./definitions";
 import { lowerCaseNested, stripNested, tableAsText, traverse } from "./utils";
 
 export class TagTide {

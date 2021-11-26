@@ -1,5 +1,4 @@
-import { El } from "html-parse-stringify";
-import { TraversePoint } from "./definitions";
+import { El, TraversePoint } from "./definitions";
 
 export function lowerCaseNested(astPiece: El[] | undefined) {
   if (!astPiece) {
