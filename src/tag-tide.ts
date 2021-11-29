@@ -1,3 +1,4 @@
+// @ts-ignore
 import { parse, stringify } from "html-parse-stringify";
 import { Attributes, AttributesByTag, El, TraceInfo, TraversePoint } from "./definitions";
 import { lowerCaseNested, stripNested, tableAsText, traverse } from "./utils";
