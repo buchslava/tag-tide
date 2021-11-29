@@ -1,13 +1,13 @@
-// @ts-ignore
-import { parse, stringify } from "html-parse-stringify";
 import { Attributes, AttributesByTag, El, TraceInfo, TraversePoint } from "./definitions";
 import { lowerCaseNested, stripNested, tableAsText, traverse } from "./utils";
+
+const HTML = require("html-parse-stringify");
 
 export class TagTide {
   private ast: El[];
 
   constructor(private original: string) {
-    this.ast = parse(this.original);
+    this.ast = HTML.parse(this.original);
   }
 
   public traverse(f: TraversePoint): TagTide {
@@ -115,7 +115,7 @@ export class TagTide {
   }
 
   public result(tagsToStrip?: string[]): string {
-    let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)[^>]*>/g, "");
+    let res = HTML.stringify(this.ast).replace(/<(\/?|\!?)(remove)[^>]*>/g, "");
     if (tagsToStrip) {
       for (const tag of tagsToStrip) {
         res = res.replace(new RegExp(`</?${tag}[^>]*>`, "g"), "");
