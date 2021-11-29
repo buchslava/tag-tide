@@ -1,6 +1,6 @@
 {
   "name": "tag-tide",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "tag-tide",
   "author": "Vyacheslav Chub <vyacheslav.chub@gmail.com>",
   "bugs": {
@@ -32,7 +32,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "html-parse-stringify": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",

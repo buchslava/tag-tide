@@ -1,3 +1,7 @@
+export interface TagCond {
+  [key: string]: boolean;
+}
+
 export interface Attributes {
   [key: string]: string;
 }
@@ -9,6 +13,7 @@ export interface El {
   attrs?: Attributes;
   children?: El[];
   content?: string;
+  comment?: string;
 }
 
 export interface AttributesByTag {
