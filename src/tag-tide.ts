@@ -114,15 +114,24 @@ export class TagTide {
     return this;
   }
 
-  public result(tagsToStrip?: string[]): string {
+  public result(tagsToStrip?: string[] | "*"): string {
     let res = stringify(this.ast).replace(/<(\/?|\!?)(remove)[^>]*>/g, "");
-    if (tagsToStrip) {
+    if (tagsToStrip === "*") {
+      res = res.replace(new RegExp(`</?.+?[^>]*>`, "g"), "");
+    } else if (tagsToStrip) {
       for (const tag of tagsToStrip) {
         res = res.replace(new RegExp(`</?${tag}[^>]*>`, "g"), "");
       }
     }
     res = res.replace(new RegExp(`<p>\\s*<\\/p>`, "g"), "");
     return res.replace(new RegExp(`\\s+`, "g"), " ");
+  }
+
+  public blocksToText(): string[] {
+    return this.ast.reduce((result: string[], branch: El) => {
+      result.push(new TagTide(this.blockTextByAst(branch)).result("*"));
+      return result;
+    }, []);
   }
 
   private getElementByAttrRegex(expectedAttr: string, re: RegExp): El | null {
@@ -143,5 +152,11 @@ export class TagTide {
     };
     deepSearch(this.ast);
     return res.length > 0 ? res[0] : null;
+  }
+
+  private blockTextByAst(ast: El): string {
+    let res = stringify([ast]);
+    res = res.replace(new RegExp(`<p>\\s*<\\/p>`, "g"), "");
+    return res.replace(new RegExp(`\\s+`, "g"), " ");
   }
 }
