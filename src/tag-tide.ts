@@ -129,7 +129,8 @@ export class TagTide {
 
   public blocksToText(): string[] {
     return this.ast.reduce((result: string[], branch: El) => {
-      result.push(new TagTide(this.blockTextByAst(branch)).result("*"));
+      const text = new TagTide(this.blockTextByAst(branch)).result("*")
+      result.push(text.replace(/&mdash;|&ndash;/g, "-").replace(/&nbsp;/g, " "));
       return result;
     }, []);
   }

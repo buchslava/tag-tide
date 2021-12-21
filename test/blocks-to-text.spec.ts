@@ -12,4 +12,12 @@ describe("text transformation", () => {
 
     expect(content).to.deep.equal(expected);
   });
+
+  it("mnemonic processing", () => {
+    const html = "<p>aaa &mdash; bbb&ndash;ccc</p>";
+    const content = new TagTide(html).blocksToText();
+    const expected = ["aaa - bbb-ccc"];
+
+    expect(content).to.deep.equal(expected);
+  });
 });
