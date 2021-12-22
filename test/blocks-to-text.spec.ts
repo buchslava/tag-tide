@@ -20,4 +20,12 @@ describe("text transformation", () => {
 
     expect(content).to.deep.equal(expected);
   });
+
+  it("mnemonic processing with unicodes", () => {
+    const html = "<p>aaa ‐ bbb‐ccc</p>";
+    const content = (new TagTide(html).blocksToText()).map(el => TagTide.stripDashes(el));
+    const expected = ["aaa - bbb-ccc"];
+
+    expect(content).to.deep.equal(expected);
+  });
 });
