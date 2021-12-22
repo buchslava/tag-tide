@@ -15,7 +15,7 @@ describe("text transformation", () => {
 
   it("mnemonic processing", () => {
     const html = "<p>aaa &mdash; bbb&ndash;ccc</p>";
-    const content = new TagTide(html).blocksToText();
+    const content = (new TagTide(html).blocksToText()).map(el => TagTide.stripDashes(el));
     const expected = ["aaa - bbb-ccc"];
 
     expect(content).to.deep.equal(expected);
