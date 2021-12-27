@@ -11,7 +11,7 @@ export class TagTide {
   }
 
   public static stripDashes(content: string) {
-    return content.replace(/&mdash;|&ndash;|\u2010|-\u002D/g, "-");
+    return content.replace(/-|&mdash;|&ndash;|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015/g, "-");
   }
 
   public traverse(f: TraversePoint): TagTide {
