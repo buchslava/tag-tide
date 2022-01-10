@@ -10,10 +10,6 @@ export class TagTide {
     this.ast = parse(this.original);
   }
 
-  public static stripDashes(content: string) {
-    return content.replace(/-|&mdash;|&ndash;|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015/g, "-");
-  }
-
   public traverse(f: TraversePoint): TagTide {
     traverse(f, this.ast, 0);
     return this;
@@ -133,7 +129,7 @@ export class TagTide {
 
   public blocksToText(): string[] {
     return this.ast.reduce((result: string[], branch: El) => {
-      const text = new TagTide(this.blockTextByAst(branch)).result("*")
+      const text = new TagTide(this.blockTextByAst(branch)).result("*");
       result.push(text.replace(/&nbsp;/g, " "));
       return result;
     }, []);
@@ -161,6 +157,7 @@ export class TagTide {
 
   private blockTextByAst(ast: El): string {
     let res = stringify([ast]);
+    res = res.replace(new RegExp(`</li>`, "g"), "</li>\n");
     res = res.replace(new RegExp(`<p>\\s*<\\/p>`, "g"), "");
     return res.replace(new RegExp(`\\s+`, "g"), " ");
   }
