@@ -1,6 +1,14 @@
 # Tag Tide
 
-Allows to prettify, change or manipulate HTML via AST. Contains some patterns regarding HTML structure transformation. This library is isomorphic, so it can be used in both browser and NodeJS applications without any additional configuration and it doesn't require DOM environment.
+Allows to prettify, change or manipulate HTML via AST. Contains some patterns regarding HTML structure transformation. This library is isomorphic, so it can be used in both browser and NodeJS applications without any additional configuration. So, this solution doesn't require DOM environment.
+
+AST logic implementation is based on [html-parse-stringify](https://github.com/henrikjoreteg/html-parse-stringify) library that is provided under MIT license just like this solution.
+
+The following files were taken from `html-parse-stringify` and changed a bit:
+
+* https://github.com/buchslava/tag-tide/blob/main/src/stringify.ts
+* https://github.com/buchslava/tag-tide/blob/main/src/parse.ts
+* https://github.com/buchslava/tag-tide/blob/main/src/parse-tag.ts
 
 ## Install
 

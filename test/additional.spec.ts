@@ -71,4 +71,39 @@ describe("additional", () => {
 
     expect(total).to.equal(6);
   });
+
+  it("Shakespeare", () => {
+    const original = `
+    <div id="content"><div class="sent">Shakespeare produced most of his known works between <span style="color: red; font-size: 24px;">1589</span> and
+         <span style="color: red">1613</span>.</div>
+    <div><div class="sent">His early plays were primarily comedies and histories and are regarded as some of the best work produced in these genres.</div>
+      <div class="sent">He then wrote mainly tragedies until 1608, among them Hamlet, Romeo and Juliet, Othello, King Lear, and Macbeth, all considered to be among the finest works in the English language.</div><div></div>`;
+    const tagTide = new TagTide(original).startAfter("id", /^content/);
+    const startedAfter = tagTide.result();
+
+    expect(startedAfter).to.equal(
+      '<div class="sent">Shakespeare produced most of his known works between <span style="color: red; font-size: 24px;">1589</span> and <span style="color: red">1613</span>.</div> <div><div class="sent">His early plays were primarily comedies and histories and are regarded as some of the best work produced in these genres.</div> <div class="sent">He then wrote mainly tragedies until 1608, among them Hamlet, Romeo and Juliet, Othello, King Lear, and Macbeth, all considered to be among the finest works in the English language.</div><div></div></div>'
+    );
+
+    tagTide.flatten();
+    const flattened = tagTide.result();
+
+    expect(flattened).to.equal(
+      '<div class="sent">Shakespeare produced most of his known works between 1589 and 1613.</div> <div>His early plays were primarily comedies and histories and are regarded as some of the best work produced in these genres. He then wrote mainly tragedies until 1608, among them Hamlet, Romeo and Juliet, Othello, King Lear, and Macbeth, all considered to be among the finest works in the English language.</div>'
+    );
+
+    tagTide.rootParagraphs();
+    const paragraphs = tagTide.result();
+
+    expect(paragraphs).to.equal(
+      '<p class="sent">Shakespeare produced most of his known works between 1589 and 1613.</p><p>His early plays were primarily comedies and histories and are regarded as some of the best work produced in these genres. He then wrote mainly tragedies until 1608, among them Hamlet, Romeo and Juliet, Othello, King Lear, and Macbeth, all considered to be among the finest works in the English language.</p>'
+    );
+
+    tagTide.removeAttributes();
+    const pureHtml = tagTide.result();
+
+    expect(pureHtml).to.equal(
+      "<p>Shakespeare produced most of his known works between 1589 and 1613.</p><p>His early plays were primarily comedies and histories and are regarded as some of the best work produced in these genres. He then wrote mainly tragedies until 1608, among them Hamlet, Romeo and Juliet, Othello, King Lear, and Macbeth, all considered to be among the finest works in the English language.</p>"
+    );
+  });
 });
